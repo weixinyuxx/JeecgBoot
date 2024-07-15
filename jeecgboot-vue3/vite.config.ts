@@ -1,4 +1,4 @@
-import type { UserConfig, ConfigEnv } from 'vite';
+import type { UserConfig, ConfigEnv, defineConfig } from 'vite';
 import pkg from './package.json';
 import dayjs from 'dayjs';
 import { loadEnv } from 'vite';
@@ -8,6 +8,7 @@ import { createProxy } from './build/vite/proxy';
 import { wrapperEnv } from './build/utils';
 import { createVitePlugins } from './build/vite/plugin';
 import { OUTPUT_DIR } from './build/constant';
+import { univerPlugin } from '@univerjs/vite-plugin'
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir);
@@ -115,8 +116,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       },
     },
 
-    // The vite plugin used by the project. The quantity is large, so it is separately extracted and managed
-    plugins: createVitePlugins(viteEnv, isBuild),
     // 预加载构建配置（首屏性能)
     optimizeDeps: {
       esbuildOptions: {
@@ -127,5 +126,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         '@jeecg/online',
       ],
     },
+    
+    // The vite plugin used by the project. The quantity is large, so it is separately extracted and managed
+    plugins: [
+      createVitePlugins(viteEnv, isBuild),
+      univerPlugin({css:true}),
+    ],
   };
 };
